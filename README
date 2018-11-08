@@ -17,7 +17,7 @@ File Structure:
   tb_fifos_interface.v -simple fifo interface testbench
   
 Tools Needed: 
-  Verilog Compiler / Waveform Viewer
+  Verilog Compiler / Waveform Viewer of your choice:
     - Icarus Verilog
     - ModelSim
     - Verilator
