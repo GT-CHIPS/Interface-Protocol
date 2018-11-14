@@ -22,10 +22,10 @@ module tb_chiplet_sys ();
   reg o_slave_rx_addr_valid;  
   reg [2:0] o_slave_rx_cmd;
   reg o_slave_rx_cmd_valid;
+  reg [5:0] o_slave_rx_feature0; 
+  reg o_slave_rx_feature0_valid;
   reg [5:0] o_slave_rx_feature1; 
   reg o_slave_rx_feature1_valid;
-  reg [5:0] o_slave_rx_feature2; 
-  reg o_slave_rx_feature2_valid;
   reg [2:0] o_slave_rx_length; 
   reg o_slave_rx_length_valid;
 
@@ -103,7 +103,7 @@ module tb_chiplet_sys ();
     1023'h000000BB000000AA,
     1023'h00003666000024440000567800001234};
 
-  reg [5:0] feature1_bank [0:5] = {
+  reg [5:0] feature0_bank [0:5] = {
     6'b000000,
     6'b000001,
     6'b000000,
@@ -111,7 +111,7 @@ module tb_chiplet_sys ();
     6'b000000,
     6'b000011};
 
-  reg [5:0] feature2_bank [0:5] = {
+  reg [5:0] feature1_bank [0:5] = {
     6'b000000,
     6'b111111,
     6'b000000,
@@ -165,8 +165,8 @@ module tb_chiplet_sys ();
       i_stream_2_fsm = 'b0;
     end else begin
       // create a merged structure for all of the streams
-      i_stream_2_fsm = {  feature2_bank[stream_counter-5],
-			feature1_bank[stream_counter-5], 					
+      i_stream_2_fsm = {  feature1_bank[stream_counter-5],
+			feature0_bank[stream_counter-5], 					
 			data_bank[stream_counter-5],
 			address_bank[stream_counter-5],
 			length_bank[stream_counter-5],
@@ -200,10 +200,10 @@ module tb_chiplet_sys ();
     .o_slave_rx_addr_valid(o_slave_rx_addr_valid), 
     .o_slave_rx_cmd(o_slave_rx_cmd),
     .o_slave_rx_cmd_valid(o_slave_rx_cmd_valid),
+    .o_slave_rx_feature0(o_slave_rx_feature0),
+    .o_slave_rx_feature0_valid(o_slave_rx_feature0_valid),
     .o_slave_rx_feature1(o_slave_rx_feature1),
     .o_slave_rx_feature1_valid(o_slave_rx_feature1_valid),
-    .o_slave_rx_feature2(o_slave_rx_feature2),
-    .o_slave_rx_feature2_valid(o_slave_rx_feature2_valid),
     .o_slave_rx_length(o_slave_rx_length),
     .o_slave_rx_length_valid(o_slave_rx_length_valid),
 
@@ -213,8 +213,8 @@ module tb_chiplet_sys ();
     .o_master_rx_addr_valid(), // for reads and writes
     .o_master_rx_cmd(),
     .o_master_rx_cmd_valid(),
-    .o_master_rx_feature1(),
-    .o_master_rx_feature1_valid(),
+    .o_master_rx_feature0(),
+    .o_master_rx_feature0_valid(),
     .o_master_rx_length(),
     .o_master_rx_length_valid()
   );   
@@ -241,11 +241,11 @@ module tb_chiplet_sys ();
     if (o_slave_rx_data_valid == 1'b1) begin
         $fwrite(f, "Data value %d, %h\n",$time, o_slave_rx_data);
     end
+    if (o_slave_rx_feature0_valid == 1'b1) begin
+        $fwrite(f, "feature0 value %d, %h\n",$time, o_slave_rx_feature0);
+    end
     if (o_slave_rx_feature1_valid == 1'b1) begin
         $fwrite(f, "feature1 value %d, %h\n",$time, o_slave_rx_feature1);
-    end
-    if (o_slave_rx_feature2_valid == 1'b1) begin
-        $fwrite(f, "feature2 value %d, %h\n",$time, o_slave_rx_feature2);
     end
     if (o_slave_rx_length_valid == 1'b1) begin
         $fwrite(f, "Length value %d, %h\n",$time, o_slave_rx_length);
@@ -265,6 +265,10 @@ module tb_chiplet_sys ();
         $fwrite(g, "------------------------------------------ \n");
         $fwrite(g, "%d, %h\n", $time, chipletsys.w_m_tx_fsm_packet);
     end
+  end
+
+  initial begin
+    #1000 $finish;
   end
 
 
