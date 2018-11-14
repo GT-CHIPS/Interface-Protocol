@@ -6,24 +6,24 @@ Contact: Eric Qin < ecqin@gatech.edu>
 Summary: This is a simple RTL implementation of a strawman-like chiplet protocol. 
 The aim of the protocol is to provide lightweight communication with minimal IO connections.
 
-File Structure:
-  src/chiplet_sys.v - top file connecting the fifo queues and RX / TX FSMs
-  src/fifo.v - simple fifo implementation
-  src/fifos_interface.v - fifos interface between Master and Slave
-  src/strawman_rx_fsm.v - recieving protocol fsm
-  src/strawman_tx_fsm.v - transmitting protocol fsm
-  tb/tb_chiplet_sys.sv - top level testbench
-  tb_fifo.v - simple fifo testbench
-  tb_fifos_interface.v -simple fifo interface testbench
+File Structure: <br />
+  src/chiplet_sys.v - top file connecting the fifo queues and RX / TX FSMs <br />
+  src/fifo.v - simple fifo implementation <br />
+  src/fifos_interface.v - fifos interface between Master and Slave <br />
+  src/strawman_rx_fsm.v - recieving protocol fsm <br />
+  src/strawman_tx_fsm.v - transmitting protocol fsm <br />
+  tb/tb_chiplet_sys.sv - top level testbench <br />
+  tb_fifo.v - simple fifo testbench <br />
+  tb_fifos_interface.v -simple fifo interface testbench <br />
   
-Tools Needed: 
-  Verilog Compiler / Waveform Viewer of your choice:
-    - Icarus Verilog
-    - ModelSim
-    - Verilator
-    - Xilinx ISE
-    - Altera Quartus
-    - GTKWave
+Tools Needed:  <br />
+  Verilog Compiler / Waveform Viewer of your choice: <br />
+    - Icarus Verilog <br />
+    - ModelSim <br />
+    - Verilator <br />
+    - Xilinx ISE <br />
+    - Altera Quartus <br />
+    - GTKWave <br />
   
 Alternative Online Verilog Compiler
   https://www.edaplayground.com/ 
