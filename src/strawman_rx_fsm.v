@@ -1,16 +1,16 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Module Name:    strawman_rx_fsm
+// Module Name:    strawman_s_rx_fsm
 // Author:	   Eric Qin
 
-// Description:    State Machine of Strawman FSM (RX Module)
+// Description:    State Machine of Strawman FSM
     
 
 //////////////////////////////////////////////////////////////////////////////////
 module strawman_rx_fsm (
   clk,
   i_flit,
-  i_slave_rx_ready, // to prevent false writing
+  i_slave_rx_ready, // TODO to prevent false writing
 
   o_slave_rx_ren,
 
@@ -22,11 +22,11 @@ module strawman_rx_fsm (
   o_cmd,
   o_cmd_valid,
 
+  o_feature0,
+  o_feature0_valid,
+
   o_feature1,
   o_feature1_valid,
-
-  o_feature2,
-  o_feature2_valid,
 
   // for read requests
   o_length,
@@ -66,11 +66,11 @@ module strawman_rx_fsm (
   output reg [2:0] o_cmd;
   output reg o_cmd_valid;
 
+  output reg [5:0] o_feature0;
+  output reg o_feature0_valid;
+
   output reg [5:0] o_feature1;
   output reg o_feature1_valid;
-
-  output reg [5:0] o_feature2;
-  output reg o_feature2_valid;
 
   output reg [2:0] o_length;
   output reg o_length_valid;
@@ -79,6 +79,7 @@ module strawman_rx_fsm (
   reg [LOG2_NUM_STATES-1:0] current_state = 'b0; // start at IDLE
   reg [LOG2_NUM_STATES-1:0] next_state = 'b0; // start at IDLE
 
+  // TODO: Implement a counter system
   // counter variable
   reg [7:0] counter = 'b0;
   reg [5:0] cycles2hflit = 'b0;
@@ -142,8 +143,8 @@ module strawman_rx_fsm (
     o_address_valid = 1'b0;
     o_data_valid = 1'b0;
     o_cmd_valid = 1'b0;
+    o_feature0_valid = 1'b0;
     o_feature1_valid = 1'b0;
-    o_feature2_valid = 1'b0;
     o_length_valid = 1'b0;
     
     case (current_state)
@@ -154,8 +155,8 @@ module strawman_rx_fsm (
         o_address_valid = 1'b0;
         o_data_valid = 1'b0;
         o_cmd_valid = 1'b0;
+        o_feature0_valid = 1'b0;
         o_feature1_valid = 1'b0;
-        o_feature2_valid = 1'b0;
         cycles2hflit = 'b0;
 
         protocol_select = i_flit[0];
@@ -179,7 +180,7 @@ module strawman_rx_fsm (
             end
           // Extended mode
           end else begin
-            if (cmd_value == 3'b000) begin // Read Req 
+            if (cmd_value == 3'b000) begin // Read Req TODO
               w_mode = 1'b1;
               next_state = READ_REQ_EX_HEADER;
             end else if (cmd_value == 3'b001) begin // Write Req
@@ -235,10 +236,10 @@ module strawman_rx_fsm (
         o_address = i_flit[31:0];
         o_cmd_valid = 1'b1;
         o_cmd = i_flit2[4:2];
+        o_feature0_valid = 1'b1;
+        o_feature0 = i_flit2[13:8];
         o_feature1_valid = 1'b1;
-        o_feature1 = i_flit2[13:8];
-        o_feature2_valid = 1'b1;
-        o_feature2 = i_flit2[19:14];
+        o_feature1 = i_flit2[19:14];
 
         if (length2 == 3'b000) begin // 4B
           cycles2hflit = 6'b1; 
@@ -305,11 +306,11 @@ module strawman_rx_fsm (
         o_length = i_flit2[7:5];
         o_length_valid = 1'b1;
 
-        o_feature1_valid = 1'b1;
-        o_feature1 = i_flit2[13:8];
+        o_feature0_valid = 1'b1;
+        o_feature0 = i_flit2[13:8];
 
-        o_feature2_valid = 1'b1;
-        o_feature2 = i_flit2[19:14];
+        o_feature1_valid = 1'b1;
+        o_feature1 = i_flit2[19:14];
 
         o_cmd_valid = 1'b1;
         o_cmd = i_flit2[4:2];
@@ -375,11 +376,11 @@ module strawman_rx_fsm (
         o_cmd_valid = 1'b1;
         o_cmd = i_flit2[4:2];
 
-        o_feature1_valid = 1'b1;
-        o_feature1 = i_flit2[13:8];
+        o_feature0_valid = 1'b1;
+        o_feature0 = i_flit2[13:8];
 
-        o_feature2_valid = 1'b1;
-        o_feature2 = i_flit2[19:14];
+        o_feature1_valid = 1'b1;
+        o_feature1 = i_flit2[19:14];
 
         if (length2 == 3'b000) begin // 4B
           cycles2hflit = 6'b1; 

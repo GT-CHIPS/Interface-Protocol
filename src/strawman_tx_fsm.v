@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Module Name:    strawman_tx_fsm
+// Module Name:    strawman_s_rx_fsm
 // Author:	   Eric Qin
 
-// Description:    State Machine of Strawman FSM (TX Module)
+// Description:    State Machine of Strawman FSM
     
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +54,8 @@ module strawman_tx_fsm (
   wire [2:0] w_length;
   wire [31:0] w_address;
   wire [1023:0] w_data;
+  wire [5:0] w_feature0;
   wire [5:0] w_feature1;
-  wire [5:0] w_feature2;
 
   assign w_mode = i_protocol_bus[0];
   assign w_valid = i_protocol_bus[1];
@@ -63,13 +63,14 @@ module strawman_tx_fsm (
   assign w_length = i_protocol_bus[7:5];
   assign w_address = i_protocol_bus[39:8];
   assign w_data = i_protocol_bus[1063:40];
-  assign w_feature1 = i_protocol_bus[1069:1064];
-  assign w_feature2 = i_protocol_bus[1075:1070];
+  assign w_feature0 = i_protocol_bus[1069:1064];
+  assign w_feature1 = i_protocol_bus[1075:1070];
 
 
   reg [LOG2_NUM_STATES-1:0] current_state = 'b0; // start at IDLE
   reg [LOG2_NUM_STATES-1:0] next_state = 'b0; // start at IDLE
 
+  // TODO: Implement a counter system
   // counter variable
   reg [6:0] counter = 'b0;
   reg [5:0] cycles2hflit = 'b0;
@@ -80,7 +81,7 @@ module strawman_tx_fsm (
 
   wire [2:0] length2;
 
-  assign length2 = w_length; 
+  assign length2 = w_length; // FIXME
 
 
   always @ (cycles2hflit) begin
@@ -117,7 +118,7 @@ module strawman_tx_fsm (
         cycles2hflit = 'b0;
 
         // setting the fsm ready bit to retieve new packet information from chiplet
-        if ((i_valid == 1'b1) && (w_valid == 1'b1)) begin // todo add cycles to header flit logic for o_ready in state machine
+        if ((i_valid == 1'b1) && (w_valid == 1'b1)) begin // TODO: add cycles to header flit logic for o_ready in state machine
           o_ready = 1'b0;
         end else begin
           o_ready = 1'b1;
@@ -138,7 +139,7 @@ module strawman_tx_fsm (
             end
           // Extended mode
           end else begin
-            if (w_cmd == 3'b000) begin // Read Req 
+            if (w_cmd == 3'b000) begin // Read Req TODO
               next_state = READ_REQ_EX_HEADER;
             end else if (w_cmd == 3'b001) begin // Write Req
               next_state = WRITE_REQ_EX_HEADER;
@@ -185,7 +186,7 @@ module strawman_tx_fsm (
         o_ready = 1'b0;
         o_flit_valid = 1'b1;
 
-        o_flit = {w_feature2, w_feature1, w_length, w_cmd, w_valid, w_mode};
+        o_flit = {w_feature1, w_feature0, w_length, w_cmd, w_valid, w_mode};
 
         if (length2 == 3'b000) begin // 4B
           cycles2hflit = 6'b1; 
@@ -244,7 +245,7 @@ module strawman_tx_fsm (
         o_ready = 1'b0;
         o_flit_valid = 1'b1;
 
-        o_flit = {w_feature2, w_feature1, w_length, w_cmd, w_valid, w_mode};
+        o_flit = {w_feature1, w_feature0, w_length, w_cmd, w_valid, w_mode};
 
         next_state = READ_REQ_EX_BODY;
       end
@@ -292,7 +293,7 @@ module strawman_tx_fsm (
         o_ready = 1'b0;
         o_flit_valid = 1'b1;
 
-        o_flit = {w_feature2, w_feature1, w_length, w_cmd, w_valid, w_mode};
+        o_flit = {w_feature1, w_feature0, w_length, w_cmd, w_valid, w_mode};
 
         if (length2 == 3'b000) begin // 4B
           cycles2hflit = 6'b1; 

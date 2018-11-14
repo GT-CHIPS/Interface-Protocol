@@ -57,7 +57,7 @@ module fifos_interface (
   input i_sc_rreq_ren;
   output [DATA_LINE_WIDTH+CONTROL_LINE_WIDTH-1:0] o_sc_rreq_outbits;
   wire w_sc_rreq_fifo_empty;
-  wire w_sc_rreq_fifo_full, w_sc_rreq_fifo_full_aib;
+  wire w_sc_rreq_fifo_full;
 
   // slave core recieve information from interface (Send Response)
   input [DATA_LINE_WIDTH+CONTROL_LINE_WIDTH-1:0] i_sc_sresp_inbits;
@@ -71,7 +71,7 @@ module fifos_interface (
   input i_mc_rresp_ren;
   output [DATA_LINE_WIDTH+CONTROL_LINE_WIDTH-1:0] o_mc_rresp_outbits;
   wire w_mc_rresp_fifo_empty;
-  wire w_mc_rresp_fifo_full, w_mc_rresp_fifo_full_aib;
+  wire w_mc_rresp_fifo_full;
 
   /// credit system nets
   output wire [LOG2_FIFO_DEPTH:0] o_credits_m2s;
@@ -80,13 +80,11 @@ module fifos_interface (
   reg [LOG2_FIFO_DEPTH:0] credits_m2s = FIFO_DEPTH;
   reg [LOG2_FIFO_DEPTH:0] credits_s2m = FIFO_DEPTH;
 
-  wire [DATA_LINE_WIDTH+CONTROL_LINE_WIDTH-1:0] w_req_bus_aib, w_resp_bus_aib;
-
   // Master core sends information from interface (Send Request) FIFOs
   fifo M_fifo_sreq (
     .clk(clk),
 
-    .i_read_packet_en(!w_sc_rreq_fifo_full_aib),
+    .i_read_packet_en(!w_sc_rreq_fifo_full),
     .i_write_packet_en(i_mc_sreq_wen),
     .i_write_packet(i_mc_sreq_inbits),
 
@@ -101,7 +99,7 @@ module fifos_interface (
 
     .i_read_packet_en(i_sc_rreq_ren),
     .i_write_packet_en(!w_sc_rreq_fifo_full),
-    .i_write_packet(w_req_bus_aib),
+    .i_write_packet(w_req_bus),
 
     .o_read_packet(o_sc_rreq_outbits),
     .o_empty_flag(w_sc_rreq_fifo_empty),
@@ -113,7 +111,7 @@ module fifos_interface (
   fifo S_fifo_sresp (
     .clk(clk),
 
-    .i_read_packet_en(!w_mc_rresp_fifo_full_aib),
+    .i_read_packet_en(!w_mc_rresp_fifo_full),
     .i_write_packet_en(i_sc_sresp_wen),
     .i_write_packet(i_sc_sresp_inbits),
 
@@ -128,7 +126,7 @@ module fifos_interface (
 
     .i_read_packet_en(i_mc_rresp_ren),
     .i_write_packet_en(!w_mc_rresp_fifo_full),
-    .i_write_packet(w_resp_bus_aib),
+    .i_write_packet(w_resp_bus),
 
     .o_read_packet(o_mc_rresp_outbits),
     .o_empty_flag(w_mc_rresp_fifo_empty),
@@ -138,7 +136,7 @@ module fifos_interface (
   // Credit-based counter system... For detecting credits - a custom FSM must be built
   // for wormhole / full packet installation.....
 
-  // NEED TO VERIFY
+  // NEED TO VERIFY TODO
   always @ (posedge clk) begin
     if ((i_sc_rreq_ren) && (!w_sc_rreq_fifo_full)) begin
       credits_m2s <= credits_m2s;
@@ -161,7 +159,7 @@ module fifos_interface (
   assign o_credits_s2m = credits_s2m;
   assign o_credits_m2s = credits_m2s;
 
-  // AIB interface removed...
+
 
 endmodule
 

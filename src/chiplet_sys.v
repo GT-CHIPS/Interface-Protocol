@@ -3,11 +3,10 @@
 // Module Name:    chiplet_sys
 // Author:	   Eric Qin
 
-// Description:    chiplet_sys with strawman protocol
+// Description:    chiplet_sys with a strawman protocol
 //////////////////////////////////////////////////////////////////////////////////
 module chiplet_sys (
   clk,
-  rst,
 
   i_master_tx_packetstream, // input to master tx fsm
   i_master_tx_packetstream_valid,
@@ -26,24 +25,23 @@ module chiplet_sys (
   o_slave_rx_addr_valid, 
   o_slave_rx_cmd,
   o_slave_rx_cmd_valid,
+  o_slave_rx_feature0,
+  o_slave_rx_feature0_valid,
   o_slave_rx_feature1,
   o_slave_rx_feature1_valid,
-  o_slave_rx_feature2,
-  o_slave_rx_feature2_valid,
   o_slave_rx_length,
   o_slave_rx_length_valid,
 
-
-  o_master_rx_data,
-  o_master_rx_data_valid, 
-  o_master_rx_addr, 
-  o_master_rx_addr_valid, 
+  o_master_rx_data, // for writes
+  o_master_rx_data_valid, // for writes
+  o_master_rx_addr, // for reads and writes
+  o_master_rx_addr_valid, // for reads and writes
   o_master_rx_cmd,
   o_master_rx_cmd_valid,
+  o_master_rx_feature0,
+  o_master_rx_feature0_valid,
   o_master_rx_feature1,
   o_master_rx_feature1_valid,
-  o_master_rx_feature2,
-  o_master_rx_feature2_valid,
   o_master_rx_length,
   o_master_rx_length_valid
 
@@ -55,7 +53,7 @@ module chiplet_sys (
   parameter CONTROL_LINE_WIDTH = 0;
   parameter WORD_SIZE = 32;
 
-  input clk, rst;
+  input clk;
 
   input [1075:0] i_master_tx_packetstream; // data bus from chiplet
   input i_master_tx_packetstream_valid;
@@ -76,11 +74,11 @@ module chiplet_sys (
   output [2:0] o_slave_rx_cmd, o_master_rx_cmd;
   output o_slave_rx_cmd_valid, o_master_rx_cmd_valid;
 
+  output [5:0] o_slave_rx_feature0, o_master_rx_feature0;
+  output o_slave_rx_feature0_valid, o_master_rx_feature0_valid;
+
   output [5:0] o_slave_rx_feature1, o_master_rx_feature1;
   output o_slave_rx_feature1_valid, o_master_rx_feature1_valid;
-
-  output [5:0] o_slave_rx_feature2, o_master_rx_feature2;
-  output o_slave_rx_feature2_valid, o_master_rx_feature2_valid;
 
   output [2:0] o_slave_rx_length, o_master_rx_length;
   output o_slave_rx_length_valid, o_master_rx_length_valid;
@@ -99,7 +97,6 @@ module chiplet_sys (
 
   wire w_mc_sreq_fifo_empty, w_mc_sreq_fifo_full;
   wire w_sc_sresp_fifo_empty, w_sc_sresp_fifo_full;
-
 
   // FIFO interface connection between master and slave chiplet
   fifos_interface fifo_interface (
@@ -125,7 +122,7 @@ module chiplet_sys (
     .i_mc_rresp_ren(w_master_rx_ren),
     .o_mc_rresp_outbits(w_mc_rreq_outbits),
 
-    // credits signal for FSM (need to verify. depending on flow control)
+    // credits signal for FSM (TODO depending on flow control)
     .o_credits_m2s(credits_m2s),
     .o_credits_s2m(credits_s2m)
   );
@@ -146,11 +143,11 @@ module chiplet_sys (
     .o_cmd(o_slave_rx_cmd),
     .o_cmd_valid(o_slave_rx_cmd_valid),
 
+    .o_feature0(o_slave_rx_feature0),
+    .o_feature0_valid(o_slave_rx_feature0_valid),
+
     .o_feature1(o_slave_rx_feature1),
     .o_feature1_valid(o_slave_rx_feature1_valid),
-
-    .o_feature2(o_slave_rx_feature2),
-    .o_feature2_valid(o_slave_rx_feature2_valid),
 
     .o_length(o_slave_rx_length),
     .o_length_valid(o_slave_rx_length_valid)
@@ -172,11 +169,11 @@ module chiplet_sys (
     .o_cmd(o_master_rx_cmd),
     .o_cmd_valid(o_master_rx_cmd_valid),
 
-    .o_feature1(o_master_rx_feature1),
-    .o_feature1_valid(o_master_rx_feature1_valid),
+    .o_feature0(o_master_rx_feature0),
+    .o_feature0_valid(o_master_rx_feature0_valid),
 
-    .o_feature2(o_master_rx_feature1),
-    .o_feature2_valid(o_master_rx_feature2_valid),
+    .o_feature1(o_master_rx_feature0),
+    .o_feature1_valid(o_master_rx_feature1_valid),
 
     .o_length(o_master_rx_length),
     .o_length_valid(o_master_rx_length_valid)
@@ -203,7 +200,6 @@ module chiplet_sys (
     .i_protocol_bus(i_slave_tx_packetstream),
     .i_valid(i_slave_tx_packetstream_valid)
   );
-
 
 
 
