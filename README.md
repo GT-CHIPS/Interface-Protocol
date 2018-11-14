@@ -1,7 +1,7 @@
 ---------------------------------------------
 Interface Protocol Design
-Contact: Eric Qin < ecqin@gatech.edu>
 ---------------------------------------------
+Contact: Eric Qin < ecqin@gatech.edu>
 
 Summary: This is a simple RTL implementation of a strawman-like chiplet protocol. 
 The aim of the protocol is to provide lightweight communication with minimal IO connections.
