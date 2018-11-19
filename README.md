@@ -3,6 +3,8 @@ Interface Protocol Design
 ---------------------------------------------
 Contact: Eric Qin < ecqin@gatech.edu>
 
+![alt text](https://i.postimg.cc/tJ6xFMw2/protocol.png)
+
 Summary: This is a simple RTL implementation of a strawman-like chiplet protocol. 
 The aim of the protocol is to provide lightweight communication with minimal IO connections.
 
@@ -32,4 +34,3 @@ To run the code, upload all of the code and similate tb_chiplet_sys.v.
 
 This work was supported by the DARPA CHIPS program.
 
-![alt text](https://i.postimg.cc/tJ6xFMw2/protocol.png)
