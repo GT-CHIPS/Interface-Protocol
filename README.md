@@ -1,7 +1,7 @@
 ---------------------------------------------
 Interface Protocol Design
 ---------------------------------------------
-Contact: Eric Qin < ecqin@gatech.edu>
+Contact: Eric Qin <ecqin@gatech.edu>
 
 ![alt text](https://i.postimg.cc/tJ6xFMw2/protocol.png)
 
